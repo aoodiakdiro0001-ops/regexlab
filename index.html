@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RegexLab | RegEx & Security Payload Tester</title>
+<meta name="description" content="Interactive regex tester with WAF validation, security payload encoder lab and cheat-sheets. Free, client-side.">
+<link rel="canonical" href="https://aoodiakdiro0001-ops.github.io/regexlab/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0c0f16">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RegexLab | RegEx & Payload Tester">
+<meta property="og:description" content="Test regex, validate WAF rules, encode security test payloads.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Consolas,monospace}
+:root{--bg:#0c0f16;--panel:#131a2e;--line:#283257;--grn:#34d399;--blu:#60a5fa;--ylw:#fbbf24;--org:#fb923c;--txt:#dfe6f3;--mut:#8b98b8;--red:#f87171}
+body{background:var(--bg);color:var(--txt)}
+header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font-size:22px;font-weight:900;color:var(--org)}
+.logo small{display:block;font-size:11px;color:var(--mut);font-weight:400}
+header select{margin-left:auto;background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:7px 10px;font-size:13px}
+.tabs{display:flex;gap:6px;padding:14px 16px 0;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+.tabs button{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-bottom:none;padding:10px 16px;border-radius:12px 12px 0 0;cursor:pointer;font-weight:800;font-size:13px}
+.tabs button.on{background:#1c2547;color:var(--org)}
+main{max-width:1100px;margin:0 auto;padding:18px 15px 60px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:0 14px 14px 14px;padding:22px;display:none}
+.panel.on{display:block}
+.panel h2{color:var(--org);margin-bottom:6px;font-size:19px}
+.panel p.sub{color:var(--mut);font-size:13px;margin-bottom:12px;line-height:1.7}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:center}
+input[type=text],select,textarea{background:#0c0f16;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 13px;font-size:13.5px;outline:none}
+textarea{width:100%;min-height:110px;font-family:Consolas,monospace;font-size:12.5px;direction:ltr}
+pre.out{background:#0c0f16;border:1px solid var(--line);border-radius:10px;padding:14px;font-size:12.5px;overflow:auto;max-height:380px;direction:ltr;text-align:left;white-space:pre-wrap}
+button.go{background:var(--org);color:#1c0e03;border:none;padding:10px 22px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px}
+button.alt{background:transparent;color:var(--blu);border:1px solid var(--blu);padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13px}
+.note{background:#1c2547;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--mut);margin:10px 0;line-height:1.7}
+.warn{background:#3a2c10;border:1px solid var(--ylw);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--ylw);margin:10px 0;line-height:1.7}
+mark{background:var(--grn);color:#04160a;border-radius:3px;padding:0 2px}
+mark.g{background:var(--blu);color:#06121f}
+table.pt{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+table.pt td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top}
+table.pt td:first-child{color:var(--mut);white-space:nowrap}
+.plib{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:10px}
+.pcard{background:#0c0f16;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12.5px}
+.pcard b{color:var(--ylw)}
+.pcard code{display:block;background:#060910;border-radius:8px;padding:8px;margin:6px 0;font-size:11.5px;word-break:break-all;direction:ltr;text-align:left}
+.pcard .vr{font-size:11.5px;color:var(--mut);margin:4px 0;word-break:break-all;direction:ltr;text-align:left}
+.pcard .vr b{color:var(--blu)}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:10px}
+.refcard{background:#0c0f16;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;font-size:13px}
+.refcard b{display:block;font-size:15px;margin-bottom:4px}
+.refcard small{color:var(--mut);display:block;margin-bottom:10px}
+.refcard a{background:var(--grn);color:#06281c;font-weight:900;text-decoration:none;font-size:13px;padding:9px 20px;border-radius:12px;display:inline-block}
+.refbadge{font-size:10px;font-weight:900;background:var(--gold,#fbbf24);color:#231a03;border-radius:8px;padding:2px 7px;margin-left:6px}
+.donate{background:linear-gradient(135deg,#1c2547,#0e2a1d);border:1px solid var(--grn);border-radius:16px;padding:20px;text-align:center;margin-top:8px;font-size:13px}
+.donate .addr{background:#0c0f16;border-radius:10px;padding:10px;font-family:monospace;font-size:12px;word-break:break-all;direction:ltr;margin:6px auto;color:var(--grn);max-width:560px}
+.side{position:fixed;top:35%;width:160px;z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:11.5px;color:var(--mut);text-align:center}
+.side.L{left:10px}.side.R{right:10px}
+.side .x{background:none;border:none;color:var(--mut);cursor:pointer;float:right}
+.adslot{max-width:1100px;margin:12px auto 0;padding:0 15px;text-align:center}
+.adslot .ph{display:block;border:1px dashed var(--line);border-radius:10px;color:var(--mut);font-size:12px;padding:10px}
+footer{text-align:center;color:var(--mut);font-size:12.5px;padding:26px 16px;border-top:1px solid var(--line);line-height:2}
+footer a{color:var(--grn)}
+#toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:12px 25px;border-radius:25px;z-index:200;display:none;font-size:14px;max-width:92vw;text-align:center}
+@media(max-width:1100px){.side{display:none}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🧪 RegexLab<small data-i="tag"></small></div>
+<select id="langSel" onchange="setLang(this.value)">
+<option value="en" selected>🇬🇧 English</option><option value="tr">🇹🇷 Türkçe</option><option value="ar">🇸🇦 العربية</option>
+</select>
+</header>
+<div class="note" style="max-width:1100px;margin:12px auto 0;padding:0 15px;background:none;border:none" ><span data-i="legalNote" style="display:block;background:#3d1414;border:1px solid var(--red);color:#ffb4b4;border-radius:10px;padding:10px 14px;font-size:12.5px"></span></div>
+<div class="tabs" id="tabs"></div>
+<main>
+<section class="panel on" id="p-regex">
+<h2 data-i="rT"></h2><p class="sub" data-i="rS"></p>
+<div class="row"><input type="text" id="rxPat" data-i-ph="rxPh" style="flex:1;min-width:200px;direction:ltr"><input type="text" id="rxFlags" value="gi" style="max-width:80px;direction:ltr"><select id="rxLib"></select></div>
+<div id="redosBox"></div>
+<label style="font-size:12.5px;color:var(--mut)" data-i="corpusL"></label>
+<textarea id="rxText" rows="6"></textarea>
+<div class="row"><button class="go" onclick="runRegex()" data-i="btnTest"></button><button class="alt" onclick="runReplace()" data-i="btnRepl"></button><span id="rxStat" style="font-size:12.5px;color:var(--mut)"></span></div>
+<div id="rxOut"></div>
+<div class="note"><b data-i="cheatT"></b><br><code style="direction:ltr;display:block">. \d \w \s ^ $ * + ? {n,m} ( ) [ ] | \b (?&lt;name&gt;)</code></div>
+</section>
+<section class="panel" id="p-payload">
+<h2 data-i="pT"></h2><p class="sub" data-i="pS"></p>
+<div class="row"><input type="text" id="plQ" data-i-ph="searchPh" style="flex:1;min-width:180px" oninput="renderPl()"><select id="plCat" onchange="renderPl()"></select><button class="alt" onclick="testWaf()" data-i="btnWaf"></button></div>
+<div id="wafBox"></div>
+<div class="plib" id="plGrid"></div>
+</section>
+<section class="panel" id="p-enc">
+<h2 data-i="eT"></h2><p class="sub" data-i="eS"></p>
+<textarea id="encIn" rows="4" data-i-ph="encPh"></textarea>
+<div class="row">
+<button class="alt" onclick="encDo('url1')">URL-enc</button><button class="alt" onclick="encDo('url2')">URL×2</button><button class="alt" onclick="encDo('urldec')">URL-dec</button><button class="alt" onclick="encDo('b64e')">→b64</button><button class="alt" onclick="encDo('b64d')">b64→</button><button class="alt" onclick="encDo('hex')">→hex</button><button class="alt" onclick="encDo('html')">→HTML</button><button class="alt" onclick="encDo('uni')">→\u</button><button class="alt" onclick="encDo('fcc')">→Chr()</button><button class="alt" onclick="encDo('upper')">UPPER</button><button class="alt" onclick="encDo('mix')">MiXeD</button>
+</div>
+<pre class="out" id="encOut"></pre>
+<div class="row"><button class="alt" onclick="copyTxt(document.getElementById('encOut').textContent)" data-i="btnCopy"></button></div>
+</section>
+<section class="panel" id="p-refs">
+<h2 data-i="fT"></h2><p class="sub" data-i="fS"></p>
+<div class="refgrid" id="refGrid"></div>
+</section>
+<section class="panel" id="p-donate">
+<h2 data-i="doT"></h2><p class="sub" data-i="doS"></p>
+<div class="donate">
+<div>₿ BTC</div><div class="addr" id="btcA"></div>
+<div>₮ USDT-TRC20</div><div class="addr" id="usdtA"></div>
+<div style="font-size:12.5px">🏦 Baran Avisat — TRY: <code dir="ltr">TR10 0001 0090 1008 4013 0050 01</code></div>
+<div style="font-size:12.5px">🏦 Baran Avisat — USD: <code dir="ltr">TR80 0001 0090 1008 4013 0050 02</code></div>
+<div class="row" style="justify-content:center"><button class="alt" onclick="copyTxt(document.getElementById('btcA').textContent)" data-i="btnCopy"></button></div>
+</div>
+</section>
+</main>
+<div class="adslot" id="adFoot"><span class="ph" data-i="adHere" style="display:block;border:1px dashed var(--line);border-radius:10px;color:var(--mut);font-size:12px;padding:10px"></span></div>
+<div class="side L" id="adL"><button class="x" onclick="this.parentElement.style.display='none'">✕</button><b>DevAds</b><br><span data-i="adHere"></span></div>
+<div class="side R" id="adR"><button class="x" onclick="this.parentElement.style.display='none'">✕</button><b>Carbon</b><br><span data-i="adHere"></span></div>
+<footer><span data-i="foot"></span><br>📧 <a href="mailto:baranavisat@gmail.com">baranavisat@gmail.com</a> · 📞 <a href="tel:+905313263722" dir="ltr">+90 531 326 37 22</a> · <a href="https://wa.me/905313263722" target="_blank" rel="noopener">WhatsApp</a><br><a href="README.md" target="_blank">README</a> · MIT</footer>
+<div id="toast"></div>
+<script>
+const CONFIG={ads:{client:'',slot:'',carbonServe:'',carbonPlacement:''},
+pay:{btc:'bc1q8dhtdrndxsl70e97t8grydfe6pjue37zrhzf6c',usdt:'TLWdTjqqogkXNEXGiPWsGdjFP6ioycxeWW'},
+refs:{burp:'',zap:'',browserstack:'',regex101:'',cyberchef:'',probely:''}};
+const REFTOOLS=[
+{k:'burp',n:'Burp Suite Pro',d:'Web security testing standard',u:'https://portswigger.net/burp'},
+{k:'zap',n:'OWASP ZAP',d:'Free security scanner',u:'https://www.zaproxy.org'},
+{k:'browserstack',n:'BrowserStack',d:'Cloud browser testing',u:'https://www.browserstack.com'},
+{k:'regex101',n:'regex101',d:'Regex debugger',u:'https://regex101.com'},
+{k:'cyberchef',n:'CyberChef',d:'Data format lab',u:'https://gchq.github.io/CyberChef'},
+{k:'probely',n:'Probely',d:'Automated DAST scanner',u:'https://probely.com'}];
+const LIBRX=[
+{n:'Email',p:'^[\\w.+-]+@[\\w-]+\\.[\\w.]+$',f:'i'},
+{n:'URL',p:'https?://[\\w.-]+(?:\\.[a-z]{2,})(?:/\\S*)?',f:'i'},
+{n:'IPv4',p:'\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b',f:'g'},
+{n:'CVE-ID',p:'CVE-\\d{4}-\\d{4,7}',f:'gi'},
+{n:'JWT',p:'eyJ[A-Za-z0-9_-]+\\.eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]*',f:'g'},
+{n:'Hex color',p:'#[0-9a-fA-F]{6}\\b',f:'g'},
+{n:'HTML tag',p:'<[^>]+>',f:'g'},
+{n:'Credit card (test)',p:'\\b(?:\\d[ -]?){13,16}\\b',f:'g'}];
+const PAYLOADS=[
+{c:'XSS',p:"<script>alert(1)</script>"},
+{c:'XSS',p:"<img src=x onerror=alert(1)>"},
+{c:'XSS',p:"'\"><svg onload=alert(1)>"},
+{c:'XSS',p:"javascript:alert(1)"},
+{c:'XSS',p:"<iframe srcdoc='<script>alert(1)</script>'>"},
+{c:'SQLi',p:"' OR '1'='1"},
+{c:'SQLi',p:"' UNION SELECT 1,2,3-- -"},
+{c:'SQLi',p:"1; DROP TABLE users--"},
+{c:'SQLi',p:"admin'--"},
+{c:'SSTI',p:"{{7*7}}"},
+{c:'SSTI',p:"${7*7}"},
+{c:'SSTI',p:"<%= 7*7 %>"},
+{c:'Path',p:"../../../../etc/passwd"},
+{c:'Path',p:"..%2f..%2fwindows%2fwin.ini"},
+{c:'CMDi',p:";id"},
+{c:'CMDi',p:"| whoami"},
+{c:'CMDi',p:"$(id)"},
+{c:'XXE',p:'<!ENTITY xxe SYSTEM "file:///etc/passwd">'},
+{c:'SSRF',p:"http://169.254.169.254/latest/meta-data/"},
+{c:'SSRF',p:"http://localhost:8080/admin"},
+{c:'Redirect',p:"//evil.example.com"},
+{c:'Redirect',p:"/\\evil.example.com"},
+{c:'LFI',p:"php://filter/convert.base64-encode/resource=index"}];
+const T={
+en:{tag:'RegEx lab + security payload encoder',tabR:'🧪 RegEx',tabP:'💥 Payloads',tabE:'🔀 Encoder',tabF:'🛠️ Pro Tools',tabDo:'💚 Donate',
+legalNote:'⚖️ Authorized testing only — use these payloads solely on systems you own or have written permission to test.',
+rT:'🧪 Interactive RegEx Lab',rS:'Type a pattern, paste a corpus, see matches live with groups. Pick a preset or write your own.',
+rxPh:'pattern, e.g. CVE-\\d{4}-\\d+',corpusL:'Test corpus',btnTest:'Test',btnRepl:'Replace $1→[x]',
+cheatT:'Cheat-sheet',
+pT:'💥 Security Payload Lab',pS:'Standard test strings with instant encodings. “WAF check” tests every payload against YOUR pattern above.',
+searchPh:'🔍 filter...',btnWaf:'WAF check vs my pattern',
+eT:'🔀 Encoder / Decoder Lab',eS:'One-click transforms for filter-evasion testing and debugging.',
+encPh:'text to transform...',
+fT:'🛠️ Pro Testing Toolset',fS:'Hand-picked cloud tools. Links marked REF support this free lab at no extra cost to you.',
+doT:'💚 Support RegexLab',doS:'Free forever. Donations keep the lab fast and ad-light.',
+btnCopy:'Copy',adHere:'Your dev-tool ad here',foot:'RegexLab — free lab. Test only systems you are authorized to test.',
+copied:'Copied ✅',needPat:'Enter a pattern ⚠️',badRx:'Invalid regex ⚠️',redosW:'⚠️ ReDoS risk: nested quantifiers — test with short input first!',
+matchesL:'matches',groupsL:'groups',replDone:'Replaced ✅',wafT:'WAF check',wafHit:'BLOCKED ✅',wafMiss:'PASSED THROUGH ⚠️',wafNeed:'Set a pattern in the RegEx tab first ⚠️',refGo:'Open →',refOff:'Official site'},
+tr:{tag:'RegEx laboratuvarı + güvenlik yükü kodlayıcı',tabR:'🧪 RegEx',tabP:'💥 Payloads',tabE:'🔀 Kodlayıcı',tabF:'🛠️ Pro Araçlar',tabDo:'💚 Destek',
+legalNote:'⚖️ Yalnızca yetkili test — bu yükleri sadece sahip olduğunuz/yazılı izinli sistemlerde kullanın.',
+rT:'🧪 İnteraktif RegEx Laboratuvarı',rS:'Deseni yazın, metni yapıştırın, eşleşmeleri gruplarla canlı görün.',
+rxPh:'desen, örn. CVE-\\d{4}-\\d+',corpusL:'Test metni',btnTest:'Test Et',btnRepl:'Değiştir $1→[x]',
+cheatT:'Kopya kağıdı',
+pT:'💥 Güvenlik Yükü Laboratuvarı',pS:'Anında kodlamalı standart test dizgileri. “WAF kontrolü” hepsini deseninize karşı dener.',
+searchPh:'🔍 filtrele...',btnWaf:'Desenime karşı WAF kontrolü',
+eT:'🔀 Kodlayıcı Laboratuvarı',eS:'Filtre atlatma testi için tek tıkla dönüşümler.',
+encPh:'dönüştürülecek metin...',
+fT:'🛠️ Pro Test Seti',fS:'Seçkin bulut araçları. REF bağlantılar bu laboratuvarı destekler.',
+doT:'💚 RegexLab\u2019i Destekle',doS:'Sonsuza dek ücretsiz. Bağışlar laboratuvarı hızlandırır.',
+btnCopy:'Kopyala',adHere:'Reklamınız burada',foot:'RegexLab — ücretsiz laboratuvar. Yalnızca yetkili sistemlerde test edin.',
+copied:'Kopyalandı ✅',needPat:'Desen girin ⚠️',badRx:'Geçersiz regex ⚠️',redosW:'⚠️ ReDoS riski: iç içe nicelikler — önce kısa metinle deneyin!',
+matchesL:'eşleşme',groupsL:'grup',replDone:'Değiştirildi ✅',wafT:'WAF kontrolü',wafHit:'ENGELLENDİ ✅',wafMiss:'GEÇTİ ⚠️',wafNeed:'Önce RegEx sekmesinde desen kurun ⚠️',refGo:'Aç →',refOff:'Resmi site'},
+ar:{tag:'مختبر التعابير والتشفير الأمني',tabR:'🧪 RegEx',tabP:'💥 حمولات',tabE:'🔀 مشفّر',tabF:'🛠️ أدوات',tabDo:'💚 ادعم',
+legalNote:'⚖️ للاختبار المصرّح فقط — استخدم هذه الحمولات على أنظمتك أو بإذن كتابي.',
+rT:'🧪 مختبر RegEx تفاعلي',rS:'اكتب النمط والصق النص وشاهد التطابقات والمجموعات مباشرة.',
+rxPh:'النمط، مثل CVE-\\d{4}-\\d+',corpusL:'نص الاختبار',btnTest:'اختبر',btnRepl:'استبدل $1→[x]',
+cheatT:'ورقة مرجعية',
+pT:'💥 مختبر الحمولات الأمنية',pS:'سلاسل اختبار قياسية بتشفيرات فورية. «فحص WAF» يجربها على نمطك.',
+searchPh:'🔍 رشّح...',btnWaf:'فحص WAF ضد نمطي',
+eT:'🔀 مختبر التشفير',eS:'تحويلات بنقرة لاختبار الفلاتر.',
+encPh:'النص للتحويل...',
+fT:'🛠️ أدوات احترافية',fS:'أدوات سحابية مختارة. روابط REF تدعم المختبر مجاناً.',
+doT:'💚 ادعم RegexLab',doS:'مجاني للأبد. التبرعات تسرّع المختبر.',
+btnCopy:'نسخ',adHere:'مساحتك الإعلانية هنا',foot:'RegexLab — مختبر مجاني. اختبر أنظمتك المصرّح بها فقط.',
+copied:'تم ✅',needPat:'أدخل نمطاً ⚠️',badRx:'regex غير صالح ⚠️',redosW:'⚠️ خطر ReDoS: كمّيات متداخلة — جرّب بنص قصير!',
+matchesL:'تطابق',groupsL:'مجموعات',replDone:'تم الاستبدال ✅',wafT:'فحص WAF',wafHit:'محظور ✅',wafMiss:'مرّ ⚠️',wafNeed:'اضبط نمطاً في تبويب RegEx أولاً ⚠️',refGo:'افتح →',refOff:'الموقع الرسمي'}};
+let lang='en';
+const t=k=>(T[lang]&&T[lang][k])||T.en[k]||k;
+function setLang(v){lang=v;document.documentElement.lang=v;document.documentElement.dir=(v==='ar')?'rtl':'ltr';document.getElementById('langSel').value=v;
+document.querySelectorAll('[data-i]').forEach(e=>{e.textContent=t(e.dataset.i);});
+document.querySelectorAll('[data-i-ph]').forEach(e=>{e.placeholder=t(e.dataset.iPh);});
+buildTabs();buildLib();renderPl();renderRefs();renderDonate();}
+const TABS=[['regex','tabR'],['payload','tabP'],['enc','tabE'],['refs','tabF'],['donate','tabDo']];
+function buildTabs(){document.getElementById('tabs').innerHTML=TABS.map(x=>`<button id="tab-${x[0]}" onclick="tab('${x[0]}')">${t(x[1])}</button>`).join('');document.getElementById('tab-regex').classList.add('on');}
+function tab(w){TABS.forEach(x=>{const b=document.getElementById('tab-'+x[0]);if(b)b.classList.toggle('on',w===x[0]);document.getElementById('p-'+x[0]).classList.toggle('on',w===x[0]);});}
+function toast(m){let d=document.getElementById('toast');d.textContent=m;d.style.display='block';clearTimeout(d._h);d._h=setTimeout(()=>d.style.display='none',2200);}
+function copyTxt(x){try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(x);}catch(e){}toast(t('copied'));}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function buildLib(){document.getElementById('rxLib').innerHTML='<option value="">—</option>'+LIBRX.map((x,i)=>`<option value="${i}">${x.n}</option>`).join('');
+const sel=document.getElementById('rxLib');sel.onchange=()=>{const it=LIBRX[+sel.value];if(!it)return;document.getElementById('rxPat').value=it.p;document.getElementById('rxFlags').value=it.f;runRegex();};}
+function redosRisk(p){return /(\([^()]*[+*][^()]*\)[+*]|\.\*.*\.\*|\(\.\+\)\+|\(\.\*\)\*)/.test(p||'');}
+function getRx(){const p=document.getElementById('rxPat').value;if(!p){toast(t('needPat'));return null;}
+try{return {re:new RegExp(p,document.getElementById('rxFlags').value||'g'),pat:p};}catch(e){toast(t('badRx'));return null;}}
+function runRegex(){
+const g=getRx();if(!g)return;
+if(redosRisk(g.pat))document.getElementById('rxOut').innerHTML='<div class="warn">'+t('redosW')+'</div>';
+else document.getElementById('rxOut').innerHTML='';
+const txt=document.getElementById('rxText').value;
+let m,n=0,groups=0,html='';
+const re=new RegExp(g.pat,g.re.flags.includes('g')?g.re.flags:g.re.flags+'g');
+html=esc(txt).replace(/&amp;lt;/g,'&lt;');
+let out='',last=0;re.lastIndex=0;
+while((m=re.exec(txt))!==null){n++;if(m.length-1>groups)groups=m.length-1;
+out+=esc(txt.slice(last,m.index))+'<mark>'+esc(m[0])+'</mark>';last=m.index+m[0].length;
+if(m[0]==='' )re.lastIndex++;if(n>500)break;}
+out+=esc(txt.slice(last));
+let gt='';
+if(n){const r2=new RegExp(g.pat,g.re.flags);const mm=r2.exec(txt);
+if(mm){gt='<table class="pt">'+mm.map((x,i)=>`<tr><td>$${i}</td><td class="mono">${esc(x==null?'':x).slice(0,200)}</td></tr>`).join('')+'</table>';}}
+document.getElementById('rxOut').innerHTML+=`<div>${n} ${t('matchesL')} · ${groups} ${t('groupsL')}</div><pre class="out">${out||esc(txt)}</pre>`+gt;
+document.getElementById('rxStat').textContent=n+' / '+(txt.length)+' chars';
+window._rx=g;
+}
+function runReplace(){
+const g=window._rx||getRx();if(!g)return;
+const txt=document.getElementById('rxText').value;
+try{const r=new RegExp(g.pat||g.re.source,g.re?g.re.flags:'g');
+const out=txt.replace(r,'[x]');
+document.getElementById('rxOut').innerHTML=`<pre class="out">${esc(out)}</pre><div>${t('replDone')}</div>`;}catch(e){toast(t('badRx'));}
+}
+function enc1(s,kind){
+if(kind==='url1')return encodeURIComponent(s);
+if(kind==='url2')return encodeURIComponent(encodeURIComponent(s));
+if(kind==='urldec'){try{return decodeURIComponent(s);}catch(e){return s;}}
+if(kind==='b64e')return btoa(unescape(encodeURIComponent(s)));
+if(kind==='b64d'){try{return decodeURIComponent(escape(atob(s.trim())));}catch(e){return s;}}
+if(kind==='hex')return [...unescape(encodeURIComponent(s))].map(c=>c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
+if(kind==='html')return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+if(kind==='uni')return [...s].map(c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0')).join('');
+if(kind==='fcc')return 'String.fromCharCode('+[...unescape(encodeURIComponent(s))].map(c=>c.charCodeAt(0)).join(',')+')';
+if(kind==='upper')return s.toUpperCase();
+if(kind==='mix')return [...s].map((c,i)=>i%2?c.toUpperCase():c.toLowerCase()).join('');
+return s;
+}
+function encDo(k){document.getElementById('encOut').textContent=enc1(document.getElementById('encIn').value,k);}
+function varOf(p){
+return {raw:p,url:encodeURIComponent(p),url2:encodeURIComponent(encodeURIComponent(p)),b64:(function(){try{return btoa(unescape(encodeURIComponent(p)));}catch(e){return '';}})(),html:p.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+}
+function renderPl(){
+const q=document.getElementById('plQ').value.trim().toLowerCase();
+const c=document.getElementById('plCat').value;
+const cats=[...new Set(PAYLOADS.map(x=>x.c))];
+const cs=document.getElementById('plCat');
+if(!cs.options.length)cs.innerHTML='<option value="">ALL</option>'+cats.map(x=>`<option>${x}</option>`).join('');
+const list=PAYLOADS.filter(x=>(!c||x.c===c)&&(!q||x.p.toLowerCase().includes(q)));
+document.getElementById('plGrid').innerHTML=list.map((x,i)=>{const v=varOf(x.p);
+return `<div class="pcard"><b>${x.c}</b><code>${esc(x.p)}</code><div class="vr"><b>url:</b> ${esc(v.url)}</div><div class="vr"><b>b64:</b> ${esc(v.b64)}</div><div class="row"><button class="alt" style="padding:5px 12px;font-size:12px" onclick="copyTxt(decodeURIComponent('${encodeURIComponent(x.p)}'))">${t('btnCopy')}</button></div></div>`;}).join('');
+}
+function testWaf(){
+const g=window._rx||getRx();if(!g){toast(t('wafNeed'));return;}
+let re;try{re=new RegExp(g.pat||g.source,g.flags||'gi');}catch(e){try{re=new RegExp(g.pat||g.source,'gi');}catch(e2){toast(t('badRx'));return;}}
+const rows=PAYLOADS.map(x=>{const hit=re.test(x.p);re.lastIndex=0;return `<tr><td class="mono">${esc(x.p).slice(0,60)}</td><td>${hit?'🟢 '+t('wafHit'):'🔴 '+t('wafMiss')}</td></tr>`;}).join('');
+const hits=PAYLOADS.filter(x=>{const h=re.test(x.p);re.lastIndex=0;return h;}).length;
+document.getElementById('wafBox').innerHTML=`<b>${t('wafT')}: ${hits}/${PAYLOADS.length}</b><table class="pt">${rows}</table>`;
+}
+function refFor(k){const r=REFTOOLS.find(x=>x.k===k);return (CONFIG.refs&&CONFIG.refs[k])||(r?r.u:'#');}
+function isRef(k){return !!(CONFIG.refs&&CONFIG.refs[k]);}
+function renderRefs(){
+document.getElementById('refGrid').innerHTML=REFTOOLS.map(x=>`<div class="refcard"><b>${x.n}${isRef(x.k)?'<span class="refbadge">REF</span>':''}</b><small>${x.d}</small><br><a target="_blank" rel="nofollow sponsored noopener" href="${refFor(x.k)}">${t('refGo')}</a><br><small style="color:var(--mut)">${t('refOff')}</small></div>`).join('');
+}
+function renderDonate(){
+document.getElementById('btcA').textContent=CONFIG.pay.btc;
+document.getElementById('usdtA').textContent=CONFIG.pay.usdt;
+}
+function loadAds(){const A=CONFIG.ads;
+[['adFoot'],['adL'],['adR']].forEach(([id])=>{const el=document.getElementById(id);if(!el)return;
+if(A.client){el.innerHTML='<ins class="adsbygoogle" style="display:block" data-ad-client="'+A.client+'" data-ad-slot="'+(A.slot||'')+'" data-ad-format="auto"></ins>';}
+else if(A.carbonServe){el.innerHTML='';const s=document.createElement('script');s.async=true;s.id='_carbonads_js';s.src='//cdn.carbonads.com/carbon.js?serve='+A.carbonServe+'&placement='+A.carbonPlacement;el.appendChild(s);}});
+if(CONFIG.ads.client&&!document.querySelector('script[src*="adsbygoogle"]')){const s=document.createElement('script');s.async=true;s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+CONFIG.ads.client;s.crossOrigin='anonymous';document.head.appendChild(s);try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}}
+}
+setLang('en');loadAds();renderDonate();
+</script>
+</body>
+</html>
